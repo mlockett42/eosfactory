@@ -14,6 +14,7 @@ FROM_HERE_TO_EOSF_DIR = "../../"
 CONFIG_JSON = "config.json"
 CONTRACTS_DIR = "contracts/"
 LOCALNODE = "localnode/"
+CONFIG_JSON_PATH = ""
 
 node_address_ = ("LOCAL_NODE_ADDRESS", [LOCALHOST_HTTP_ADDRESS])
 wallet_address_ = ("WALLET_MANAGER_ADDRESS", [LOCALHOST_HTTP_ADDRESS])
@@ -49,11 +50,17 @@ contract_workspace_ = (
 is_nodeos_in_window_ = ("NODE_IN_WINDOW", [0])
 
 
-def set_localnode(localnode):
+def set_localnode_data_dir(localnode):
     '''Overrides the default localnode directory path
     '''
     global LOCALNODE
     LOCALNODE = localnode
+    global data_dir_
+    data_dir_ = ("LOCAL_NODE_DATA_DIR", [LOCALNODE])
+
+def set_config_json_path(path):
+    global CONFIG_JSON_PATH
+    CONFIG_JSON_PATH = path
 
 def eosf_dir():
     '''The absolute directory of the EOSFactory installation.
@@ -264,7 +271,10 @@ def keosd_wallet_dir(raise_error=True):
 def config_file():
     '''The path to the *config.json* file.
     '''
-    file = os.path.join(eosf_dir(), CONFIG_JSON)
+    if CONFIG_JSON_PATH == "":
+        file = os.path.join(eosf_dir(), CONFIG_JSON)
+    else:
+        file = os.path.join(CONFIG_JSON_PATH, CONFIG_JSON)
 
     if not os.path.exists(file):
         with open(file, "w") as output:
